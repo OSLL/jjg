@@ -1,0 +1,4 @@
+#- job-template:
+name: 'jjb-{name}-from-template'
+builders:
+    - shell: 'echo "Hello i am a template {template-name}! param1 = {param1}"'

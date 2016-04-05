@@ -1,0 +1,7 @@
+[jenkins]
+# Put Jenkins user name here
+user=
+# Put Jenkins password here
+password=
+# Put link to Jenkins here
+url=http://server:port/

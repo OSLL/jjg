@@ -1,0 +1,8 @@
+- job-template: 
+    !include: 'test_jobs/template/template.yaml'
+
+- project:
+    name: jjb_projecti1
+    jobs: 
+        - 'jjb-{name}-from-template':
+            param1: 'value1' 

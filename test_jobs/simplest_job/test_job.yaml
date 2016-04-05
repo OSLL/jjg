@@ -1,0 +1,24 @@
+# File: jobs/my_first_job.yaml
+- job:
+    # Specify your job name.
+    name: jjb_test_job
+    builders:
+      - shell:
+          'echo "Hello World! $MESSAGE $MAX_COUNT" {name}111112'
+    description: 'This is my first Jenkins Job defined in YAML file format.'
+    # Parameters
+    parameters:
+        - string:
+            name: MESSAGE
+            default: 'Free Hello for all.'
+        - string:
+            name: MAX_COUNT
+            default: '3'
+    # Automatically start (trigger) the job's build at 12:00 and 15:00 on every day.
+    triggers:
+        - timed: '@hourly'
+    wrappers:
+      - timeout:
+          fail: true
+          # Timeout job after 120 seconds of its execution. If timeout happens = fail the build.
+          timeout: 2

@@ -1,0 +1,11 @@
+- job:
+    name: jjb_parameter_set_defined_in_include
+    builders:
+      - shell:
+          'echo $OS_TYPE'
+    description: 'Test'
+    parameters:
+        - choice:
+            name: OS_TYPE
+            choices:
+                !include './test_jobs/includes/os_set.yaml'

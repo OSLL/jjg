@@ -1,0 +1,7 @@
+- builder:
+    !include: 'test_jobs/macros/ls-builder.yaml'
+
+- job:
+    name: jjb-macros
+    builders:
+      - ls

@@ -1,0 +1,36 @@
+- job:
+    name: Jobs_git_synchronization
+    description: 'This job perform synchronization between yaml jobs at @REPO@ and this jenkins instance'
+#    parameters:
+#        - string:
+#            name: JJG_PATH
+#            # TODO parametrize this path
+#            default: /home/vagranttest/jjg/jenkins_job_gitizer/
+#            description:  'Path for jenkins-job-gitizer scripts'
+    scm:
+        - git:
+            # TODO parametrize this url
+            url: REPO_URL
+            branches:
+                - master
+    builders:
+        - shell: 
+            'old_pwd=`pwd`;cd JJG_PATH/;scripts/validate_jobs.sh "${old_pwd}/jobs"'
+        - shell: 
+            'old_pwd=`pwd`;cd JJG_PATH/;scripts/sync_jobs.sh JJG_PATH/test_configs/mdbci_jenkins.ini "${old_pwd}/jobs"'
+    publishers:
+        - email-ext:
+            recipients: $DEFAULT_RECIPIENTS
+            reply-to: $DEFAULT_REPLYTO
+            content-type: default
+            subject: $DEFAULT_SUBJECT
+            body: $DEFAULT_CONTENT
+            attach-build-log: false
+            always: true
+            aborted: true
+            failure: true
+            still-failing: true
+            success: true
+            fixed: true
+            send-to:
+               - recipients
