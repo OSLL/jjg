@@ -2,7 +2,8 @@
 
 if [ "$#" -ne 3 ]; then
 	echo "Illegal number of parameters"
-	echo "Usage: <path>/scripts/ud_job.sh <jenkins config path> [update|delete] <yaml file path>"
+	echo "Usage: <path>/scripts/ud_job.sh <jenkins config path> {update|delete} <yaml file path>"
+	exit 1
 fi
 
 JENKINS_CONFIG=$1
