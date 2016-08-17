@@ -26,5 +26,8 @@ else
 fi
 
 jenkins-jobs --conf ${JENKINS_CONFIG} ${ACTION} ${YAML_JOB}_temp
+res=$?
 
 rm  ${YAML_JOB}_temp
+
+exit $res
