@@ -22,8 +22,7 @@ echo "Timestamp: "${TIMESTAMP}", Git ID: "${GIT_ID}
 echo "PATH: "${YAML_JOB}", GIT BRANCH: "${GIT_BRANCH}
 
 if grep -q "^    description:\s*" ${YAML_JOB}"_temp"; then
-  sed -i -e "s/^    description[^']*'[^']*/& \n\r${TAG}\n\r/" ${YAML_JOB}_temp
-  sed -i -e "s/^    description[^\]]*\][^\]]*/& \n\r${PATH_AND_BRANCH_TAG}\n\r/" ${YAML_JOB}_temp
+  sed -i -e "s/^    description[^']*'[^']*/& \n\r${TAG}\n\r${PATH_AND_BRANCH_TAG}\n\r/" ${YAML_JOB}_temp
   echo "description modified"
 else
   sed -i -e "3i\ \ \ \ description:  '${TAG}\n\r${PATH_AND_BRANCH_TAG}\n\r'" ${YAML_JOB}_temp
