@@ -15,23 +15,24 @@ cp ${YAML_JOB} ${YAML_JOB}"_temp"
 TIMESTAMP=$(date --rfc-3339=seconds)
 GIT_ID=$(git rev-parse HEAD)
 TAG="[${TIMESTAMP} ID=${GIT_ID}]"
-GIT_BRANCH=$(git branch | grep '*' | sed 's/[*]//')
+GIT_BRANCH=$(git branch | grep '*' | sed "s/[*]//")
 PATH_AND_BRANCH_TAG="[PATH=${YAML_JOB} GIT BRANCH=${GIT_BRANCH}]"
 
 echo "Timestamp: "${TIMESTAMP}", Git ID: "${GIT_ID}
+echo "PATH: "${YAML_JOB}", GIT BRANCH: "${GIT_BRANCH}
 
 if grep -q "^    description:\s*" ${YAML_JOB}"_temp"; then
-  sed -i -e "s/^    description[^']*'[^']*/& \n\r${TAG}\n\r${PATH_AND_BRANCH_TAG=}\n\r/" ${YAML_JOB}_temp
-  
-  echo "description modified" 
+  sed -i -e "s/^    description[^']*'[^']*/& \n\r${TAG}\n\r/" ${YAML_JOB}_temp
+  sed -i -e "s/^    description[^\]]*\][^\]]*/& \n\r${PATH_AND_BRANCH_TAG}\n\r/" ${YAML_JOB}_temp
+  echo "description modified"
 else
-  sed -i -e "3i\ \ \ \ description:  '${TAG}\n\r${PATH_AND_BRANCH_TAG=}\n\r'" ${YAML_JOB}_temp
+  sed -i -e "3i\ \ \ \ description:  '${TAG}\n\r${PATH_AND_BRANCH_TAG}\n\r'" ${YAML_JOB}_temp
   echo "description added"
 fi
 
 jenkins-jobs --conf ${JENKINS_CONFIG} ${ACTION} ${YAML_JOB}_temp
 res=$?
 
-rm  ${YAML_JOB}_temp
+cat  ${YAML_JOB}_temp
 
 exit $res
