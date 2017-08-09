@@ -13,6 +13,10 @@ function add_job_to_view {
   fi
 }
 
+function is_view_exist {
+  java -jar "$HOME/jenkins-cli.jar" -s $(prop 'url') -auth $(prop 'user'):$(prop 'password') get-view "${1}" 
+}
+
 if [ "$#" -ne 3 ]; then
 	echo "Illegal number of parameters"
 	echo "Usage: <path>/scripts/ud_job.sh <jenkins config path> {update|delete} <yaml file path>"
@@ -48,6 +52,7 @@ res=$?
 view_name=`grep "description:" ${YAML_JOB}"_temp" | grep -o -P '(?<=View:)\s*(\w*)(?=.)' | grep -o -P '[^\s]+'`
 
 if [[ -n "${view_name// }" ]]; then
+	is_view_exist $view_name
 	add_job_to_view $view_name
 fi
 
