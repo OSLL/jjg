@@ -1,5 +1,9 @@
 #!/bin/bash
 
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+TEMPLATE_VIEW_PATH=$SCRIPTPATH/view_template.xml
+
 function prop {
     grep "${1}=" ${JENKINS_CONFIG}|cut -d'=' -f2
 }
@@ -13,8 +17,21 @@ function add_job_to_view {
   fi
 }
 
+view_name=""
 function is_view_exist {
-  java -jar "$HOME/jenkins-cli.jar" -s $(prop 'url') -auth $(prop 'user'):$(prop 'password') get-view "${1}" 
+  java -jar "$HOME/jenkins-cli.jar" -s $(prop 'url') -auth $(prop 'user'):$(prop 'password') get-view "$view_name" &>/dev/null
+}
+
+function create_view {
+  cp $TEMPLATE_VIEW_PATH $TEMPLATE_VIEW_PATH.temp
+  sed -i "s|#{VIEW_NAME}|$view_name|g" $TEMPLATE_VIEW_PATH.temp
+
+  if ! java -jar "$HOME/jenkins-cli.jar" -s $(prop 'url') -auth $(prop 'user'):$(prop 'password') create-view "$view_name" < $TEMPLATE_VIEW_PATH.temp; then
+      echo "ERROR: view - '$view_name' creation failed!"
+  else
+      echo "SUCCESS: view - '$view_name' has been created"
+  fi
+  rm $TEMPLATE_VIEW_PATH.temp
 }
 
 if [ "$#" -ne 3 ]; then
@@ -52,8 +69,10 @@ res=$?
 view_name=`grep "description:" ${YAML_JOB}"_temp" | grep -o -P '(?<=View:)\s*(\w*)(?=.)' | grep -o -P '[^\s]+'`
 
 if [[ -n "${view_name// }" ]]; then
-	is_view_exist $view_name
-	add_job_to_view $view_name
+	if ! $(is_view_exist); then
+		create_view $view_name
+    fi
+    add_job_to_view $view_name
 fi
 
 cat  ${YAML_JOB}_temp
