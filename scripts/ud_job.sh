@@ -5,11 +5,11 @@ SCRIPTPATH=`dirname $SCRIPT`
 TEMPLATE_VIEW_PATH=$SCRIPTPATH/view_template.xml
 
 function prop {
-    grep "${1}=" ${JENKINS_CONFIG}|cut -d'=' -f2
+  grep "${1}=" ${JENKINS_CONFIG}|cut -d'=' -f2
 }
 
 function add_job_to_view {
-  JOB_NAME=`echo $YAML_JOB | grep -o -P '(?<=\w\/)\w*(?=.yaml)'`
+  JOB_NAME=`echo $YAML_JOB | grep -o -P '\w*(?=.yaml)'`
   if ! java -jar "$HOME/jenkins-cli.jar" -s $(prop 'url') -auth $(prop 'user'):$(prop 'password') add-job-to-view "${1}" "$JOB_NAME"; then
     echo "ERROR: job - '$JOB_NAME' adding to view '${1}' failed!"
   else
@@ -27,17 +27,17 @@ function create_view {
   sed -i "s|#{VIEW_NAME}|$view_name|g" $TEMPLATE_VIEW_PATH.temp
 
   if ! java -jar "$HOME/jenkins-cli.jar" -s $(prop 'url') -auth $(prop 'user'):$(prop 'password') create-view "$view_name" < $TEMPLATE_VIEW_PATH.temp; then
-      echo "ERROR: view - '$view_name' creation failed!"
+    echo "ERROR: view - '$view_name' creation failed!"
   else
-      echo "SUCCESS: view - '$view_name' has been created"
+    echo "SUCCESS: view - '$view_name' has been created"
   fi
   rm $TEMPLATE_VIEW_PATH.temp
 }
 
 if [ "$#" -ne 3 ]; then
-	echo "Illegal number of parameters"
-	echo "Usage: <path>/scripts/ud_job.sh <jenkins config path> {update|delete} <yaml file path>"
-	exit 1
+  echo "Illegal number of parameters"
+  echo "Usage: <path>/scripts/ud_job.sh <jenkins config path> {update|delete} <yaml file path>"
+  exit 1
 fi
 
 JENKINS_CONFIG=$1
@@ -69,10 +69,10 @@ res=$?
 view_name=`grep "description:" ${YAML_JOB}"_temp" | grep -o -P '(?<=View:)\s*(\w*)(?=.)' | grep -o -P '[^\s]+'`
 
 if [[ -n "${view_name// }" ]]; then
-	if ! $(is_view_exist); then
-		create_view $view_name
-    fi
-    add_job_to_view $view_name
+  if ! $(is_view_exist); then
+    create_view $view_name
+  fi
+  add_job_to_view $view_name
 fi
 
 cat  ${YAML_JOB}_temp
