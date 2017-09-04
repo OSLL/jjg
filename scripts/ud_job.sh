@@ -9,7 +9,7 @@ function prop {
 }
 
 function add_job_to_view {
-  JOB_NAME=`echo $YAML_JOB | grep -o -P '\w*(?=.yaml)'`
+  JOB_NAME=`grep "name:" ${YAML_JOB}"_temp" | grep -o -P '(?<=name:)\s*(\w*)' | grep -o -P '[^\s]+' | head -n1`
   if ! java -jar "$HOME/jenkins-cli.jar" -s $(prop 'url') -auth $(prop 'user'):$(prop 'password') add-job-to-view "${1}" "$JOB_NAME"; then
     echo "ERROR: job - '$JOB_NAME' adding to view '${1}' failed!"
   else
